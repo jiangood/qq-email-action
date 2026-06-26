@@ -1,5 +1,5 @@
 {
-  "name": "send-file-to-qq-email",
+  "name": "qq-email-action",
   "version": "1.0.0",
   "description": "GitHub Action to send files as email attachments via QQ邮箱 SMTP",
   "main": "dist/index.js",

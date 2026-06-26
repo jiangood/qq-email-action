@@ -6,18 +6,47 @@ const fs = require('fs');
 
 async function run() {
   try {
-    const filePath = core.getInput('file-path', { required: true });
     const recipientEmail = core.getInput('recipient-email', { required: true });
     const senderEmail = core.getInput('sender-email', { required: true });
-    const subject = core.getInput('subject') || 'File Attachment';
+    const subject = core.getInput('subject') || 'QQ Email';
+    const body = core.getInput('body');
+    const bodyType = core.getInput('body-type') || 'text';
+    const filePath = core.getInput('file-path');
+
+    if (!body && !filePath) {
+      core.setFailed('At least one of body or file-path must be provided');
+      return;
+    }
+
     const authCode = process.env.QQMAIL_AUTH_CODE;
 
-    const globber = await glob.create(filePath);
-    const files = await globber.glob();
+    const mailOptions = {
+      from: senderEmail,
+      to: recipientEmail,
+      subject: subject,
+    };
 
-    if (files.length === 0) {
-      core.setFailed(`No files matched: ${filePath}`);
-      return;
+    if (body) {
+      if (bodyType === 'html') {
+        mailOptions.html = body;
+      } else {
+        mailOptions.text = body;
+      }
+    }
+
+    if (filePath) {
+      const globber = await glob.create(filePath);
+      const files = await globber.glob();
+
+      if (files.length === 0) {
+        core.setFailed(`No files matched: ${filePath}`);
+        return;
+      }
+
+      mailOptions.attachments = files.map((file) => ({
+        filename: path.basename(file),
+        content: fs.readFileSync(file),
+      }));
     }
 
     const transporter = nodemailer.createTransport({
@@ -30,22 +59,7 @@ async function run() {
       },
     });
 
-    for (const file of files) {
-      const fileName = path.basename(file);
-      const fileContent = fs.readFileSync(file);
-
-      await transporter.sendMail({
-        from: senderEmail,
-        to: recipientEmail,
-        subject: subject,
-        attachments: [
-          {
-            filename: fileName,
-            content: fileContent,
-          },
-        ],
-      });
-    }
+    await transporter.sendMail(mailOptions);
   } catch (error) {
     core.setFailed(error.message);
   }

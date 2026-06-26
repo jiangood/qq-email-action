@@ -1,13 +1,10 @@
-name: 'Send File to QQ Email'
-description: 'Send files as email attachments via QQ邮箱 SMTP'
+name: 'QQ Email Action'
+description: 'Send email via QQ邮箱 SMTP with optional attachments'
 author: 'Your Org'
 branding:
   icon: 'mail'
   color: 'blue'
 inputs:
-  file-path:
-    description: 'File path or glob pattern to match (e.g., output/*.pdf)'
-    required: true
   recipient-email:
     description: 'Recipient email address'
     required: true
@@ -17,7 +14,17 @@ inputs:
   subject:
     description: 'Email subject'
     required: false
-    default: 'File Attachment'
+    default: 'QQ Email'
+  body:
+    description: 'Email body content (text or HTML)'
+    required: false
+  body-type:
+    description: 'Body content type: text or html'
+    required: false
+    default: 'text'
+  file-path:
+    description: 'File path or glob pattern for attachments (e.g., output/*.pdf)'
+    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'
