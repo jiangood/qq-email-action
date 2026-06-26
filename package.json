@@ -1,0 +1,19 @@
+{
+  "name": "send-file-to-qq-email",
+  "version": "1.0.0",
+  "description": "GitHub Action to send files as email attachments via QQ邮箱 SMTP",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/main.js --license licenses.txt",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/glob": "^0.5.0",
+    "nodemailer": "^6.9.16"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.3",
+    "jest": "^29.7.0"
+  }
+}
